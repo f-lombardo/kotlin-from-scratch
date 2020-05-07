@@ -42,7 +42,24 @@ private fun Database.findComposerBy(predicate: (Composer) -> Boolean) =
 fun Composer.findOperaByYear(year: Int): Opera? =
     this.operas.firstOrNull { it.yearOfComposition == year }
 
+fun Opera?.displayResult(): Unit {
+    if (this == null) {
+        println("No result")
+    } else {
+        println(this)
+    }
+}
+
+fun printResultOrNotFoundMessage(opera: Opera?): Unit = println(opera ?: "No results")
+
 fun main() {
+    println(
+        openDatabase("franco","secret")
+        ?.findComposerByName(("Giuseppe Verdi"))
+        ?.findOperaByYear(1853)
+        ?: "No results"
+    )
+
     println(
         openDatabase("franco","secret")
         ?.findComposerBy(similarName("verdi"))
@@ -63,4 +80,25 @@ fun main() {
             ?.findOperaByYear(1900)
             ?: "No results"
     )
+
+    openDatabase("franco","secret")
+        ?.findComposerBy(exactMatchToGiacomoPuccini)
+        ?.findOperaByYear(1901)
+        .displayResult()
+
+    openDatabase("franco","secret")
+        ?.findComposerBy(exactMatchToGiacomoPuccini)
+        ?.findOperaByYear(1901)
+        .displayResult()
+
+    openDatabase("franco","secret")
+        ?.findComposerBy(exactMatchToGiacomoPuccini)
+        ?.findOperaByYear(1901)
+        .run(::println)
+
+    openDatabase("franco","secret")
+        ?.findComposerBy(exactMatchToGiacomoPuccini)
+        ?.findOperaByYear(1901)
+        .run(::printResultOrNotFoundMessage)
 }
+
