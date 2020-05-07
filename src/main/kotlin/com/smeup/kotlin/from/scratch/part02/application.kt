@@ -32,6 +32,11 @@ fun exactMatchToGiuseppeVerdi(composer: Composer): Boolean = composer.name == "G
 
 val exactMatchToGiacomoPuccini = exactName("Giacomo Puccini")
 
+val exctMatchToItaly = {
+    composer: Composer ->
+        composer.nation == "Italy"
+}
+
 fun Database.findComposerByName(name: String): Composer? {
     return findComposerBy(exactName(name))
 }
@@ -55,7 +60,7 @@ fun printResultOrNotFoundMessage(opera: Opera?): Unit = println(opera ?: "No res
 fun main() {
     println(
         openDatabase("franco","secret")
-        ?.findComposerByName(("Giuseppe Verdi"))
+        ?.findComposerByName("Giuseppe Verdi")
         ?.findOperaByYear(1853)
         ?: "No results"
     )
@@ -78,6 +83,13 @@ fun main() {
         openDatabase("franco","secret")
             ?.findComposerBy(exactMatchToGiacomoPuccini)
             ?.findOperaByYear(1900)
+            ?: "No results"
+    )
+
+    println(
+        openDatabase("franco","secret")
+            ?.findComposerBy(exctMatchToItaly)
+            ?.findOperaByYear(1853)
             ?: "No results"
     )
 
