@@ -32,7 +32,7 @@ fun exactMatchToGiuseppeVerdi(composer: Composer): Boolean = composer.name == "G
 
 val exactMatchToGiacomoPuccini = exactName("Giacomo Puccini")
 
-val exctMatchToItaly = {
+val exactMatchToItaly = {
     composer: Composer ->
         composer.nation == "Italy"
 }
@@ -88,7 +88,7 @@ fun main() {
 
     println(
         openDatabase("franco","secret")
-            ?.findComposerBy(exctMatchToItaly)
+            ?.findComposerBy(exactMatchToItaly)
             ?.findOperaByYear(1853)
             ?: "No results"
     )
