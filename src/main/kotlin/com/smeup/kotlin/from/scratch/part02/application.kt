@@ -47,13 +47,14 @@ private fun Database.findComposerBy(predicate: (Composer) -> Boolean) =
 fun Composer.findOperaByYear(year: Int): Opera? =
     this.operas.firstOrNull { it.yearOfComposition == year }
 
-fun Opera?.displayResult(): Unit {
+fun Opera?.displayResult(): Unit =
     if (this == null) {
         println("No result")
     } else {
         println(this)
     }
-}
+
+
 
 fun printResultOrNotFoundMessage(opera: Opera?): Unit = println(opera ?: "No results")
 
