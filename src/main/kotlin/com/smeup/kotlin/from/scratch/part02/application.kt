@@ -113,5 +113,13 @@ fun main() {
         ?.findComposerBy(exactMatchToGiacomoPuccini)
         ?.findOperaByYear(1901)
         .run(::printResultOrNotFoundMessage)
+
+    println(
+        openDatabase("franco","secret")
+            ?.findComposerBy(exactMatchToGiacomoPuccini)
+            ?.operas
+            ?.maxBy (Opera::yearOfComposition)
+            ?: "No results"
+    )
 }
 
