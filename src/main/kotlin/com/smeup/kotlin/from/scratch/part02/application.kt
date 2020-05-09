@@ -7,6 +7,11 @@ data class Composer(
     val operas: List<Opera>
 )
 
+class OperaHtmlDiv(val opera: Opera) {
+    override fun toString(): String =
+        "<div><b>${opera.name}</b> ${opera.yearOfComposition}</div>"
+}
+
 data class Opera(val name: String, val yearOfComposition: Int)
 
 fun openDatabase(user: String, password: String): Database? =
@@ -53,8 +58,6 @@ fun Opera?.displayResult(): Unit =
     } else {
         println(this)
     }
-
-
 
 fun printResultOrNotFoundMessage(opera: Opera?): Unit = println(opera ?: "No results")
 
@@ -119,6 +122,15 @@ fun main() {
             ?.findComposerBy(exactMatchToGiacomoPuccini)
             ?.operas
             ?.maxBy (Opera::yearOfComposition)
+            ?: "No results"
+    )
+
+    println(
+        openDatabase("franco","secret")
+            ?.findComposerBy(exactMatchToGiacomoPuccini)
+            ?.operas
+            ?.sortedBy (Opera::yearOfComposition)
+            ?.map (::OperaHtmlDiv)
             ?: "No results"
     )
 }
