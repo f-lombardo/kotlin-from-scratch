@@ -13,20 +13,32 @@ class OperaHtmlDiv(val opera: Opera) {
         "<div><b>${opera.name}</b> ${opera.yearOfComposition}</div>"
 }
 
-fun openDatabase(user: String, password: String): Database? =
+fun openDatabase(user: String, password: String): Database? {
     if ("franco" == user && "secret" == password) {
-        val verdi =
-            Composer("Giuseppe Verdi", "Italy",
-                listOf(Opera("Aida",1871),
-                       Opera("La traviata",1853)))
-        val puccini =
-            Composer("Giacomo Puccini", "Italy",
-                listOf(Opera("Turandot",1926),
-                       Opera("Tosca",1900)))
-        Database((listOf(verdi, puccini)))
-    } else {
-        null
+        return sampleDatabase()
     }
+    return null
+}
+
+private fun sampleDatabase(): Database {
+    val verdi =
+        Composer(
+            "Giuseppe Verdi", "Italy",
+            listOf(
+                Opera("Aida", 1871),
+                Opera("La traviata", 1853)
+            )
+        )
+    val puccini =
+        Composer(
+            "Giacomo Puccini", "Italy",
+            listOf(
+                Opera("Turandot", 1926),
+                Opera("Tosca", 1900)
+            )
+        )
+    return Database((listOf(verdi, puccini)))
+}
 
 fun exactName(name: String): (Composer) -> Boolean = { it.name == name }
 
@@ -63,6 +75,13 @@ fun printResultOrNotFoundMessage(opera: Opera?): Unit = println(opera ?: "No res
 fun main() {
     println(
         openDatabase("franco","secret")
+        ?.findComposerByName("Giuseppe Verdi")
+        ?.findOperaByYear(1853)
+        ?: "No results"
+    )
+
+    println(
+        openDatabase(password = "secret", user = "franco")
         ?.findComposerByName("Giuseppe Verdi")
         ?.findOperaByYear(1853)
         ?: "No results"
