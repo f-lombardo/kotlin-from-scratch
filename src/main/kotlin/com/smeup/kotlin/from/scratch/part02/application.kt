@@ -57,7 +57,8 @@ fun Database.findComposerByName(name: String): Composer? {
     return findComposerBy(exactName(name))
 }
 
-private fun Database.findComposerBy(predicate: (Composer) -> Boolean) =
+// inline here could improve performances
+private inline fun Database.findComposerBy(predicate: (Composer) -> Boolean) =
     this.composers.firstOrNull(predicate)
 
 fun Composer.findOperaByYear(year: Int): Opera? =
@@ -151,6 +152,7 @@ fun main() {
             ?.map (::OperaHtmlDiv)
             ?: "No results"
     )
+
     println(
         openDatabase("franco", "secret")
             ?.findComposerBy(exactMatchToGiacomoPuccini)
