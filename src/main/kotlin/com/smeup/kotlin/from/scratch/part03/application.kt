@@ -1,5 +1,7 @@
 package com.smeup.kotlin.from.scratch.part03
 import com.github.michaelbull.result.*
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * Examples using https://github.com/michaelbull/kotlin-result
@@ -81,6 +83,12 @@ fun main() {
 
     println(
         openDatabase("franco","secret")
+            .andThen { it.findComposerBy(similarName("rossi")) }
+            .andThen { it.findOperaByYear(1853) }
+    )
+
+    println(
+        openDatabase("franco","secret")
             .andThen { it.findComposerBy(::exactMatchToGiuseppeVerdi) }
             .andThen { it.findOperaByYear(1853) }
     )
@@ -93,6 +101,11 @@ fun main() {
     openDatabase("franco","secret")
         .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
         .andThen { it.findOperaByYear(1931) }
+        .mapBoth(::println, ::println)
+
+    openDatabase("franco","secret")
+        .andThenRun { findComposerBy(exactMatchToGiacomoPuccini) }
+        .andThenRun { findOperaByYear(1931) }
         .mapBoth(::println, ::println)
 
     println(
@@ -115,3 +128,13 @@ fun main() {
     )
 
 }
+
+inline fun <V, E, R> Result<V, E>.andThenRun(transform: V.() -> Result<R, E>): Result<R, E> =
+    andThen(transform)
+
+inline fun <V, E, R> Result<V, E>.andThenMap(transform: V.() -> R): Result<R, E> =
+    when (this) {
+        is Ok -> Ok(value.transform())
+        is Err -> this
+    }
+
