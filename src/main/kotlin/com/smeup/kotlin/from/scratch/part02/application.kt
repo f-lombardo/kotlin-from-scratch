@@ -1,5 +1,7 @@
 package com.smeup.kotlin.from.scratch.part02
 
+import java.io.PrintStream
+
 data class Database(val composers: List<Composer>)
 data class Composer(
     val name: String,
@@ -70,6 +72,13 @@ fun Opera?.displayResult(): Unit =
         println(this)
     }
 
+infix fun Opera?.displayResultTo(printStream: PrintStream): Unit =
+    if (this == null) {
+        printStream.println("No result")
+    } else {
+        printStream.println(this)
+    }
+
 fun printResultOrNotFoundMessage(opera: Opera?): Unit = println(opera ?: "No results")
 
 fun main() {
@@ -124,6 +133,10 @@ fun main() {
         ?.findComposerBy(exactMatchToGiacomoPuccini)
         ?.findOperaByYear(1901)
         .displayResult()
+
+    openDatabase("franco","secret")
+        ?.findComposerBy(exactMatchToGiacomoPuccini)
+        ?.findOperaByYear(1901) displayResultTo System.err
 
     openDatabase("franco","secret")
         ?.findComposerBy(exactMatchToGiacomoPuccini)
