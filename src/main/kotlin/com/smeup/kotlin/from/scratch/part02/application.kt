@@ -53,12 +53,11 @@ val exactMatchToItaly = {
         composer.nation == "Italy"
 }
 
-fun Database.findComposerByName(name: String): Composer? {
-    return findComposerBy(exactName(name))
-}
+inline fun Database.findComposerByName(name: String): Composer? =
+    findComposerBy(exactName(name))
 
 // inline here could improve performances
-private inline fun Database.findComposerBy(predicate: (Composer) -> Boolean) =
+inline fun Database.findComposerBy(predicate: (Composer) -> Boolean) =
     this.composers.firstOrNull(predicate)
 
 fun Composer.findOperaByYear(year: Int): Opera? =
