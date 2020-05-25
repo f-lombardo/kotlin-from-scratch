@@ -17,7 +17,7 @@ suspend fun findBigPrime(): BigInteger =
 
 object Coroutines01 {
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String>) = runBlocking {
         println("Starting...")
     }
 }
