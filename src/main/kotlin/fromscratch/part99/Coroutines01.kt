@@ -32,16 +32,6 @@ object Coroutines01 {
             async { threadSwitchingCoroutine(2, 300) }
         )
         println("main ends")
-
-        val sequence = sequence {
-            val start = 0
-            // yielding a single value
-            yield(start)
-            // yielding an iterable
-            yieldAll(1..5 step 2)
-            // yielding an infinite sequence
-            yieldAll(generateSequence(8) { it * 3 })
-        }
     }
 }
 

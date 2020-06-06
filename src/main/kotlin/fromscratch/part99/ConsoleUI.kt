@@ -1,7 +1,8 @@
 package fromscratch.part99
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import fromscratch.utils.logMsg
+import fromscratch.utils.threadName
+import kotlinx.coroutines.*
 
 object ConsoleUI {
     private val res = StringBuilder()
@@ -43,4 +44,12 @@ object ConsoleUI {
     fun main(args: Array<String>) = runBlocking {
         val job = runningBar()
     }
+}
+
+fun CoroutineScope.startUIJob(): Job {
+    logMsg("Starting UI")
+    val barJob = launch(Dispatchers.Unconfined) {
+        ConsoleUI.runningBar(::threadName)
+    }
+    return barJob
 }

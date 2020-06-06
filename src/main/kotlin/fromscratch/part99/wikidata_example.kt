@@ -83,16 +83,14 @@ object CoroutineRunner {
     @JvmStatic
     fun main(args: Array<String>) {
         setOptionToShowCoroutineNames()
+        logMsg("Program started")
         val millis = measureTimeMillis {
             runBlocking {
-                logMsg("Starting")
-                val barJob = launch(Dispatchers.Unconfined) {
-                    ConsoleUI.runningBar(::threadName)
-                }
+                val uiJob = startUIJob()
 
                 val operas = findComposerByLanguage(Language.ITALIAN)
                 ?.filter { composer -> composer.yearOfBirth in (1810..1860) }
-                ?.map { composer ->
+                ?.parallelMap { composer ->
                     composer.operas()?.filter { opera -> opera.yearOfComposition in (1900..1910) }
                 }
                 ?.filterNotNull()
@@ -101,10 +99,11 @@ object CoroutineRunner {
                 logMsg("${operas?.size ?: 0} results found")
                 operas?.forEach(::logMsg)
 
-                barJob.cancel()
+                uiJob.cancel()
             }
         }
         logMsg("Done in $millis milliseconds")
     }
+
 }
 
