@@ -7,6 +7,7 @@ import com.bordercloud.sparql.SparqlResult
 import fromscratch.utils.tryOrNull
 import kotlinx.coroutines.*
 import java.net.URI
+import kotlin.math.log
 import kotlin.system.measureTimeMillis
 
 val endpointUrl = URI("https://query.wikidata.org/sparql")
@@ -91,7 +92,7 @@ fun logMsg(msg: Any?) = println("${threadName()}$msg")
 
 fun threadName() = "[${Thread.currentThread().name}] "
 
-suspend fun <A, B> Iterable<A>.pmap(f: suspend (A) -> B): List<B> = coroutineScope {
+suspend fun <A, B> Iterable<A>.pmap(f: suspend (A) -> B?): List<B?> = coroutineScope {
     map { async { f(it) } }.awaitAll()
 }
 
@@ -106,16 +107,19 @@ object CoroutineRunner {
                     ConsoleUI.runningBar(::threadName)
                 }
 
-                val x = Database()
-                    .findComposerByLanguage(Language.ITALIAN)
-                    ?.filter { composer -> composer.yearOfBirth in (1810..1860) }
-                    ?.mapNotNull {
-                        it.operas()?.filter {
-                            it.yearOfComposition in (1900..1910)
-                        }
+                val operas = Database()
+                .findComposerByLanguage(Language.ITALIAN)
+                ?.filter { composer -> composer.yearOfBirth in (1810..1860) }
+                ?.map {
+                    it.operas()?.filter {
+                        it.yearOfComposition in (1900..1910)
                     }
-                    ?.flatten()
-                    ?.forEach(::logMsg)
+                }
+                ?.filterNotNull()
+                ?.flatten()
+
+                logMsg("${operas?.size ?: 0} results found")
+                operas?.forEach(::logMsg)
 
                 barJOb.cancel()
             }
