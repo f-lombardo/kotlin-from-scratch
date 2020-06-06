@@ -81,11 +81,18 @@ fun Any.toYear(): Int =
 fun String.firstLine(): String =
     lines().first { it.isNotEmpty() }.trim()
 
-suspend fun retrieveData(endpointUrl: URI, query: String): SparqlResult = withContext(Dispatchers.IO) {
+suspend fun retrieveData(endpointUrl: URI, query: String): SparqlResult =
+    retreiveParallel(endpointUrl, query)
+
+suspend fun retreiveParallel(endpointUrl: URI, query: String) = withContext(Dispatchers.IO) {
+    retrieveDataJob(endpointUrl, query)
+}
+
+fun retrieveDataJob(endpointUrl: URI, query: String): SparqlResult {
     logMsg("Retrieving data for '${query.firstLine()}'")
     val sp = SparqlClient(false)
     sp.endpointRead = endpointUrl
-    sp.query(query)
+    return sp.query(query)
 }
 
 fun logMsg(msg: Any?) = println("${threadName()}$msg")
@@ -110,7 +117,7 @@ object CoroutineRunner {
                 val operas = Database()
                 .findComposerByLanguage(Language.ITALIAN)
                 ?.filter { composer -> composer.yearOfBirth in (1810..1860) }
-                ?.map {
+                ?.pmap {
                     it.operas()?.filter {
                         it.yearOfComposition in (1900..1910)
                     }
