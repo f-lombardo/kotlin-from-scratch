@@ -7,6 +7,7 @@ import com.bordercloud.sparql.SparqlResult
 import fromscratch.utils.tryOrNull
 import kotlinx.coroutines.*
 import java.net.URI
+import kotlin.system.measureTimeMillis
 
 val endpointUrl = URI("https://query.wikidata.org/sparql")
 
@@ -16,66 +17,58 @@ enum class Language(val code: String) {
     GERMAN("Q188")
 }
 
-data class Composer(val code: String, val name: String, val language: Language) {
-    suspend fun operas(): List<Opera>? =
-        tryOrNull {
-            logMsg("Finding operas for ${this.name}")
-            val querySelect = """
-        SELECT ?opera ?operaLabel ?year
-        WHERE
-        {
-          ?opera wdt:P86 wd:${this.code};
-                 wdt:P571 ?year.
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }         
+data class Composer(val code: String, val name: String, val language: Language, val description: String, val yearOfBirth: Int) {
+    suspend fun operas(): List<Opera>? {
+        logMsg("Finding operas for ${this.name}")
+        return """
+                SELECT ?opera ?operaLabel ?year
+                WHERE {
+                  ?opera wdt:P86 wd:${this.code};                                      #P86 composedBy
+                         wdt:P571 ?year.                                               #P571 date of composition
+                  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }         
+                }   
+             """.findEntities { record ->
+            Opera(
+                record["opera"]!!.toCode(),
+                record["operaLabel"].toString(),
+                record["year"]!!.toYear(),
+                this
+            )
         }
-    """
-            val data = retrieveData(
-                endpointUrl,
-                querySelect
-            ).model
-            data.rows.map { record ->
-                Opera(
-                    record["opera"]!!.toCode(),
-                    record["operaLabel"].toString(),
-                    record["year"]!!.toYear(),
-                    this
-                )
-            }
-        }
+    }
 }
 
 data class Opera(val code: String, val name: String, val yearOfComposition: Int, val composer: Composer)
 
+suspend fun <T> String.findEntities(constructor: (HashMap<String, Any>) -> T): List<T>? = tryOrNull {
+    retrieveData(endpointUrl, this).model.rows.map(constructor)
+}
+
 class Database {
-    suspend fun findComposerByLanguage(language: Language): List<Composer>? =
-        tryOrNull {
-            val querySelect = """
-            SELECT ?composer ?composerLabel ?composerDescription
-            WHERE
-            {
-              #P1412=language   
-              ?composer wdt:P1412 wd:${language.code};
-                        #P136=genre   Q1344=Opera
-                        wdt:P136 wd:Q1344;
-                        #P106=occupation   Q36834=composer
-                        wdt:P106 wd:Q36834.  
-              SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-            }
-        """
-            logMsg("Retrieving composers ")
-            val data = retrieveData(
-                endpointUrl,
-                querySelect
-            ).model
-            logMsg("Composers retreived")
-            data.rows.map { record ->
-                Composer(
-                    record["composer"]!!.toCode(),
-                    record["composerLabel"].toString(),
-                    language
-                )
-            }
+    suspend fun findComposerByLanguage(language: Language): List<Composer>? {
+        logMsg("Retrieving composers ")
+        return """
+                SELECT ?composer ?composerLabel ?dateOfBirth ?composerDescription
+                WHERE {
+                  ?composer wdt:P1412 wd:${language.code};                            #P1412=language
+                            wdt:P136 wd:Q1344;                                        #P136=genre   Q1344=Opera
+                            wdt:P106 wd:Q36834;                                       #P106=occupation   Q36834=composer
+                            wdt:P569 ?dateOfBirth.
+                  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+                }
+                """.findEntities { record ->
+            Composer(
+                record["composer"]!!.toCode(),
+                record["composerLabel"].toString(),
+                language,
+                record["composerDescription"].toString(),
+                record["dateOfBirth"]!!.toYear()
+            )
         }
+        ?.filter {
+                composer -> composer.description.toLowerCase().contains("italian")
+        }
+    }
 }
 
 fun Any.toCode(): String =
@@ -94,35 +87,40 @@ suspend fun retrieveData(endpointUrl: URI, query: String): SparqlResult = withCo
     sp.query(query)
 }
 
-fun logMsg(msg: Any) {
-    println("${threadName()}$msg")
-}
+fun logMsg(msg: Any?) = println("${threadName()}$msg")
 
 fun threadName() = "[${Thread.currentThread().name}] "
 
-object CouroutineRunner {
+suspend fun <A, B> Iterable<A>.pmap(f: suspend (A) -> B): List<B> = coroutineScope {
+    map { async { f(it) } }.awaitAll()
+}
+
+object CoroutineRunner {
     // To print more information about coroutines run with -Dkotlinx.coroutines.debug
     @JvmStatic
     fun main(args: Array<String>) {
-        runBlocking {
-            logMsg("Starting")
-            val barJOb = launch(Dispatchers.Unconfined) {
-                ConsoleUI.runningBar(::threadName)
-            }
-
-            val italianOperasOfStartingOf20thCentury =
-                Database()
-                    .findComposerByLanguage(Language.ITALIAN)?.mapNotNull {
-                it.operas()?.filter {
-                    it.yearOfComposition in (1900..1910)
+        val millis = measureTimeMillis {
+            runBlocking {
+                logMsg("Starting")
+                val barJOb = launch(Dispatchers.Unconfined) {
+                    ConsoleUI.runningBar(::threadName)
                 }
-            }
-            ?.flatten()
-            ?.forEach(::logMsg)
 
-            barJOb.cancel()
+                val x = Database()
+                    .findComposerByLanguage(Language.ITALIAN)
+                    ?.filter { composer -> composer.yearOfBirth in (1810..1860) }
+                    ?.mapNotNull {
+                        it.operas()?.filter {
+                            it.yearOfComposition in (1900..1910)
+                        }
+                    }
+                    ?.flatten()
+                    ?.forEach(::logMsg)
+
+                barJOb.cancel()
+            }
         }
-        logMsg("Done!")
+        logMsg("Done in $millis milliseconds")
     }
 }
 
