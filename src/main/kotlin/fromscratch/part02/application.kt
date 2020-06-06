@@ -1,4 +1,4 @@
-package com.smeup.kotlin.from.scratch.part02
+package fromscratch.part02
 
 import java.io.PrintStream
 
@@ -83,7 +83,7 @@ fun printResultOrNotFoundMessage(opera: Opera?): Unit = println(opera ?: "No res
 
 fun main() {
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
         ?.findComposerByName("Giuseppe Verdi")
         ?.findOperaByYear(1853)
         ?: "No results"
@@ -97,59 +97,59 @@ fun main() {
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
         ?.findComposerBy(similarName("verdi"))
         ?.findOperaByYear(1853)
         ?: "No results"
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             ?.findComposerBy(::exactMatchToGiuseppeVerdi)
             ?.findOperaByYear(1853)
             ?: "No results"
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             ?.findComposerBy(exactMatchToGiacomoPuccini)
             ?.findOperaByYear(1900)
             ?: "No results"
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             ?.findComposerBy(exactMatchToItaly)
             ?.findOperaByYear(1853)
             ?: "No results"
     )
 
-    openDatabase("franco","secret")
+    openDatabase("franco", "secret")
         ?.findComposerBy(exactMatchToGiacomoPuccini)
         ?.findOperaByYear(1901)
         .displayResult()
 
-    openDatabase("franco","secret")
+    openDatabase("franco", "secret")
         ?.findComposerBy(exactMatchToGiacomoPuccini)
         ?.findOperaByYear(1901)
         .displayResult()
 
-    openDatabase("franco","secret")
+    openDatabase("franco", "secret")
         ?.findComposerBy(exactMatchToGiacomoPuccini)
         ?.findOperaByYear(1901) displayResultTo System.err
 
-    openDatabase("franco","secret")
+    openDatabase("franco", "secret")
         ?.findComposerBy(exactMatchToGiacomoPuccini)
         ?.findOperaByYear(1901)
         .run(::println)
 
-    openDatabase("franco","secret")
+    openDatabase("franco", "secret")
         ?.findComposerBy(exactMatchToGiacomoPuccini)
         ?.findOperaByYear(1901)
         .run(::printResultOrNotFoundMessage)
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             ?.findComposerBy(exactMatchToGiacomoPuccini)
             ?.operas
             ?.maxBy (Opera::yearOfComposition)
@@ -157,7 +157,7 @@ fun main() {
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             ?.findComposerBy(exactMatchToGiacomoPuccini)
             ?.operas
             ?.sortedBy (Opera::yearOfComposition)

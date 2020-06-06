@@ -1,7 +1,6 @@
-package com.smeup.kotlin.from.scratch.part03
+package fromscratch.part03
 import com.github.michaelbull.result.*
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
+import fromscratch.utils.andThenRun
 
 /**
  * Examples using https://github.com/michaelbull/kotlin-result
@@ -70,46 +69,46 @@ fun Composer.findOperaByYear(year: Int): Result<Opera, String> =
 
 fun main() {
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             .andThen { it.findComposerByName("Giuseppe Verdi") }
             .andThen { it.findOperaByYear(1853) }
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             .andThen { it.findComposerBy(similarName("verdi")) }
             .andThen { it.findOperaByYear(1853) }
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             .andThen { it.findComposerBy(similarName("rossi")) }
             .andThen { it.findOperaByYear(1853) }
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             .andThen { it.findComposerBy(::exactMatchToGiuseppeVerdi) }
             .andThen { it.findOperaByYear(1853) }
     )
 
-    openDatabase("franco","secret")
+    openDatabase("franco", "secret")
         .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
         .andThen { it.findOperaByYear(1931) }
         .run(::println)
 
-    openDatabase("franco","secret")
+    openDatabase("franco", "secret")
         .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
         .andThen { it.findOperaByYear(1931) }
         .mapBoth(::println, ::println)
 
-    openDatabase("franco","secret")
+    openDatabase("franco", "secret")
         .andThenRun { findComposerBy(exactMatchToGiacomoPuccini) }
         .andThenRun { findOperaByYear(1931) }
         .mapBoth(::println, ::println)
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
             .map {
                 it.operas
@@ -118,7 +117,7 @@ fun main() {
     )
 
     println(
-        openDatabase("franco","secret")
+        openDatabase("franco", "secret")
             .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
             .map {
                 it.operas
@@ -129,12 +128,5 @@ fun main() {
 
 }
 
-inline fun <V, E, R> Result<V, E>.andThenRun(transform: V.() -> Result<R, E>): Result<R, E> =
-    andThen(transform)
 
-inline fun <V, E, R> Result<V, E>.andThenMap(transform: V.() -> R): Result<R, E> =
-    when (this) {
-        is Ok -> Ok(value.transform())
-        is Err -> this
-    }
 
