@@ -1,37 +1,31 @@
 package fromscratch.part99
 
+import fromscratch.utils.logMsg
+import fromscratch.utils.setOptionToShowCoroutineNames
 import kotlinx.coroutines.*
 import java.math.BigInteger
 import java.util.*
 import kotlin.system.measureTimeMillis
 
-fun findBigPrimeBlocking(): BigInteger {
-    println("Running in ${Thread.currentThread().name}")
-    return BigInteger.probablePrime(4096, Random())
-}
-
-suspend fun findBigPrime(): BigInteger =
-    withContext(Dispatchers.Default) {
-        findBigPrimeBlocking()
-    }
-
-suspend fun threadSwitchingCoroutine(number: Int, delay: Long) {
-    println("Coroutine $number starts work on ${Thread.currentThread().name}")
-    delay(delay)
-    withContext(Dispatchers.IO) {
-        println("Coroutine $number has finished on ${Thread.currentThread().name}")
-    }
-}
-
 object Coroutines01 {
+    // This example doesn't work as expected
     @JvmStatic
-    fun main(args: Array<String>) = runBlocking {
-        println("Starting...")
-        joinAll(
-            async { threadSwitchingCoroutine(1, 500) },
-            async { threadSwitchingCoroutine(2, 300) }
-        )
-        println("main ends")
+    fun main(args: Array<String>) {
+        setOptionToShowCoroutineNames()
+        runBlocking {
+            async(CoroutineName("Calandrino")) {
+                while (true) {
+                    logMsg("So' bischero!")
+                    BigInteger.probablePrime(1024, Random())
+                }
+            }
+            async(CoroutineName("Buffalmacco")) {
+                while (true) {
+                    logMsg("Io pitto!")
+                    BigInteger.probablePrime(1024, Random())
+                }
+            }
+        }
     }
 }
 
