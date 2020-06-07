@@ -2,6 +2,8 @@ package fromscratch.part99
 
 import fromscratch.utils.logMsg
 import fromscratch.utils.setOptionToShowCoroutineNames
+import kotlinx.coroutines.async
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.runBlocking
 
 object SequenceExample {
@@ -16,13 +18,25 @@ object SequenceExample {
         }
     }
 
+    fun lucas() = sequence {
+        var terms = Pair(2, 1)
+
+        // this sequence is infinite
+        while (true) {
+            logMsg("Lucas from $terms")
+            yield(terms.first)
+            terms = Pair(terms.second, terms.first + terms.second)
+        }
+    }
+
     @JvmStatic
     fun main(args: Array<String>) {
         setOptionToShowCoroutineNames()
         runBlocking {
-            val uiJob =startUIJob()
-            logMsg(fibonacci().take(400).toList())
-            uiJob.cancel()
+            joinAll(
+                async { fibonacci().take(100) },
+                async { lucas().take(100)}
+            )
         }
     }
 }

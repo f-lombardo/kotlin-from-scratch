@@ -31,7 +31,7 @@ compileTestKotlin {
 //Builds file build/libs/kotlin-from-scratch-all.jar
 task fatJar(type: Jar) {
     manifest {
-        attributes 'Main-Class': 'com.smeup.kotlin.from.scratch.part01.ApplicationKt'
+        attributes 'Main-Class': 'fromscratch.part99.ThreadsExample'
     }
     archiveBaseName = project.name + '-all'
     archiveVersion = ''
