@@ -28,15 +28,19 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-//Builds file build/libs/kotlin-from-scratch-all.jar
+//Builds a jar file with all dependencies in build/libs/
 task fatJar(type: Jar) {
+    def mainClassName = 'fromscratch.part03.MemoryCoroutinesExample'
     manifest {
-        attributes 'Main-Class': 'fromscratch.part99.ThreadsExample'
+        attributes 'Main-Class':  mainClassName
     }
-    archiveBaseName = project.name + '-all'
+    archiveBaseName = mainClassName + '-all'
     archiveVersion = ''
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+    doLast {
+        println("Created " + archiveFile.get())
+    }
 }
 
 fatJar.dependsOn compileKotlin

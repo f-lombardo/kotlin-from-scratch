@@ -1,4 +1,4 @@
-package fromscratch.part99
+package fromscratch.part03
 
 import fromscratch.utils.logMsg
 import fromscratch.utils.threadName
@@ -42,7 +42,7 @@ object ConsoleUI {
     @JvmStatic
     // This is just a simple application to show how the running bar looks like
     fun main(args: Array<String>) = runBlocking {
-        val job = runningBar()
+        runningBar()
     }
 }
 

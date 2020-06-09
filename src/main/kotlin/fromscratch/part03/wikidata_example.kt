@@ -1,11 +1,10 @@
-package fromscratch.part99
+package fromscratch.part03
 
 // See https://github.com/BorderCloud/SPARQL-JAVA
 // To test your queries use https://query.wikidata.org/
 
 import fromscratch.utils.logMsg
 import fromscratch.utils.setOptionToShowCoroutineNames
-import fromscratch.utils.threadName
 import fromscratch.utils.tryOrNull
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis

@@ -1,4 +1,4 @@
-package fromscratch.part03
+package fromscratch.part02.result
 import com.github.michaelbull.result.*
 import fromscratch.utils.andThenRun
 
@@ -67,65 +67,67 @@ fun Composer.findOperaByYear(year: Int): Result<Opera, String> =
         .firstOrNull { it.yearOfComposition == year }
         .toResultOr { "No opera found" }
 
-fun main() {
-    println(
-        openDatabase("franco", "secret")
-            .andThen { it.findComposerByName("Giuseppe Verdi") }
-            .andThen { it.findOperaByYear(1853) }
-    )
+object ApplicationWithResult {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        println(
+            openDatabase("franco", "secret")
+                .andThen { it.findComposerByName("Giuseppe Verdi") }
+                .andThen { it.findOperaByYear(1853) }
+        )
 
-    println(
-        openDatabase("franco", "secret")
-            .andThen { it.findComposerBy(similarName("verdi")) }
-            .andThen { it.findOperaByYear(1853) }
-    )
+        println(
+            openDatabase("franco", "secret")
+                .andThen { it.findComposerBy(similarName("verdi")) }
+                .andThen { it.findOperaByYear(1853) }
+        )
 
-    println(
-        openDatabase("franco", "secret")
-            .andThen { it.findComposerBy(similarName("rossi")) }
-            .andThen { it.findOperaByYear(1853) }
-    )
+        println(
+            openDatabase("franco", "secret")
+                .andThen { it.findComposerBy(similarName("rossi")) }
+                .andThen { it.findOperaByYear(1853) }
+        )
 
-    println(
-        openDatabase("franco", "secret")
-            .andThen { it.findComposerBy(::exactMatchToGiuseppeVerdi) }
-            .andThen { it.findOperaByYear(1853) }
-    )
+        println(
+            openDatabase("franco", "secret")
+                .andThen { it.findComposerBy(::exactMatchToGiuseppeVerdi) }
+                .andThen { it.findOperaByYear(1853) }
+        )
 
-    openDatabase("franco", "secret")
-        .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
-        .andThen { it.findOperaByYear(1931) }
-        .run(::println)
-
-    openDatabase("franco", "secret")
-        .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
-        .andThen { it.findOperaByYear(1931) }
-        .mapBoth(::println, ::println)
-
-    openDatabase("franco", "secret")
-        .andThenRun { findComposerBy(exactMatchToGiacomoPuccini) }
-        .andThenRun { findOperaByYear(1931) }
-        .mapBoth(::println, ::println)
-
-    println(
         openDatabase("franco", "secret")
             .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
-            .map {
-                it.operas
-                    .maxBy(Opera::yearOfComposition)
-            }
-    )
+            .andThen { it.findOperaByYear(1931) }
+            .run(::println)
 
-    println(
         openDatabase("franco", "secret")
             .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
-            .map {
-                it.operas
-                    .sortedBy(Opera::yearOfComposition)
-                    .map(::OperaHtmlDiv)
-            }
-    )
+            .andThen { it.findOperaByYear(1931) }
+            .mapBoth(::println, ::println)
 
+        openDatabase("franco", "secret")
+            .andThenRun { findComposerBy(exactMatchToGiacomoPuccini) }
+            .andThenRun { findOperaByYear(1931) }
+            .mapBoth(::println, ::println)
+
+        println(
+            openDatabase("franco", "secret")
+                .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
+                .map {
+                    it.operas
+                        .maxBy(Opera::yearOfComposition)
+                }
+        )
+
+        println(
+            openDatabase("franco", "secret")
+                .andThen { it.findComposerBy(exactMatchToGiacomoPuccini) }
+                .map {
+                    it.operas
+                        .sortedBy(Opera::yearOfComposition)
+                        .map(::OperaHtmlDiv)
+                }
+        )
+    }
 }
 
 

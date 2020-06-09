@@ -1,4 +1,4 @@
-package fromscratch.part99
+package fromscratch.part03
 
 import com.bordercloud.sparql.SparqlClient
 import com.bordercloud.sparql.SparqlResult
