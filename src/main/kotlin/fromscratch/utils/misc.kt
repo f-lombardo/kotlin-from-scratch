@@ -45,4 +45,4 @@ fun usedMemory() = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().fre
 
 fun humanReadableUsedMemory() = humanReadableByteCountBin(usedMemory())
 
-fun getProcessID() = ManagementFactory.getRuntimeMXBean().getName()
+fun getProcessID() = ManagementFactory.getRuntimeMXBean().name.split("@").first()
