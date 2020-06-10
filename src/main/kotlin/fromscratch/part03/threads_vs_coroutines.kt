@@ -8,14 +8,20 @@ import kotlinx.coroutines.runBlocking
 import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
 
+//Pass the number of items to create as first parameter
+
+private fun readItemsNrFromParms(args: Array<String>) = if (args.size > 0) args[0].toInt() else 10_000
+
 object MemoryThreadsExample {
+
     @JvmStatic
     fun main(args: Array<String>) {
-        println("Process ${getProcessID()}")
+        val items = readItemsNrFromParms(args)
+        println("Process ID ${getProcessID()} creating $items threads")
         val elapsed = measureTimeMillis {
-            (1..50_000).forEach {
+            (1..items).forEach {
                 thread(start = true, name = "MyThread$it") {
-                    while (true) Thread.sleep(100)
+                    while (true) Thread.sleep(10_000)
                 }
             }
         }
@@ -26,11 +32,12 @@ object MemoryThreadsExample {
 object MemoryCoroutinesExample {
     @JvmStatic
     fun main(args: Array<String>) = runBlocking {
-        println("Process ${getProcessID()}")
+        val items = readItemsNrFromParms(args)
+        println("Process ID ${getProcessID()} creating $items coroutines")
         val elapsed = measureTimeMillis {
-            (1..50_000).forEach {
+            (1..items).forEach {
                 launch {
-                    while (true) delay(100)
+                    while (true) delay(10_000)
                 }
             }
         }
