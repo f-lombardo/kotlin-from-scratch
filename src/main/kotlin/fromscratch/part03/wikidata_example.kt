@@ -79,6 +79,10 @@ suspend fun <A, B> Iterable<A>.concurrentMap(f: suspend (A) -> B?): List<B?> = c
     map { async { f(it) } }.awaitAll()
 }
 
+suspend fun <A, B> Iterable<A>.parallelMap(f: suspend (A) -> B?): List<B?> = withContext(Dispatchers.Default) {
+    map { async { f(it) } }.awaitAll()
+}
+
 object CoroutineRunner {
     @JvmStatic
     fun main(args: Array<String>) {
@@ -90,7 +94,7 @@ object CoroutineRunner {
 
                 val operas = findComposerByLanguage(Language.ITALIAN)
                 ?.filter { composer -> composer.yearOfBirth in (1810..1860) }
-                ?.concurrentMap { composer ->
+                ?.map { composer ->
                     composer.operas()?.filter { opera -> opera.yearOfComposition in (1900..1910) }
                 }
                 ?.filterNotNull()
