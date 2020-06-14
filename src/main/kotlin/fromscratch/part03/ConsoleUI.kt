@@ -4,7 +4,7 @@ import fromscratch.utils.logMsg
 import fromscratch.utils.threadName
 import kotlinx.coroutines.*
 
-object ConsoleUI {
+class RunningBar {
     private val res = StringBuilder()
 
     private fun progress(pct: Int, barLength: Int): String? {
@@ -19,8 +19,6 @@ object ConsoleUI {
         return res.toString()
     }
 
-    fun emptyString() = ""
-
     private fun progressBar(percentage: Int, showPercentage: Boolean = true, prefix: () -> String) {
         if (showPercentage) {
             print(String.format("${prefix()}[%s]%d%%\r", progress(percentage, 74), percentage))
@@ -28,6 +26,8 @@ object ConsoleUI {
             print(String.format("${prefix()}[%s]\r", progress(percentage, 74)))
         }
     }
+
+    private fun emptyString() = ""
 
     suspend fun runningBar(prefix: () -> String = ::emptyString) {
         while (true) {
@@ -37,19 +37,23 @@ object ConsoleUI {
             }
         }
     }
-
-    @Throws(Exception::class)
-    @JvmStatic
-    // This is just a simple application to show how the running bar looks like
-    fun main(args: Array<String>) = runBlocking {
-        runningBar()
-    }
 }
 
 fun CoroutineScope.startUIJob(): Job {
     logMsg("Starting UI")
     val barJob = launch(Dispatchers.Unconfined) {
-        ConsoleUI.runningBar(::threadName)
+        RunningBar().runningBar(::threadName)
     }
     return barJob
 }
+
+object ConsoleUI {
+    @Throws(Exception::class)
+    @JvmStatic
+    // This is just a simple application to show how the running bar looks like
+    fun main(args: Array<String>) = runBlocking {
+        RunningBar().runningBar()
+    }
+}
+
+
