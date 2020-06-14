@@ -68,13 +68,14 @@ suspend fun Composer.operas(): List<Opera>? {
 
 suspend fun <T> String.findEntities(constructor: (Map<String, Any>) -> T): List<T>? = tryOrNull {
     retrieveFromWikidata(this).model.rows.map(constructor)
+//  parallelRetrieve(this).model.rows.map(constructor)
 }
 
 suspend fun parallelRetrieve(query: String) = withContext(Dispatchers.IO) {
     retrieveFromWikidata(query)
 }
 
-suspend fun <A, B> Iterable<A>.parallelMap(f: suspend (A) -> B?): List<B?> = coroutineScope {
+suspend fun <A, B> Iterable<A>.concurrentMap(f: suspend (A) -> B?): List<B?> = coroutineScope {
     map { async { f(it) } }.awaitAll()
 }
 
@@ -89,7 +90,7 @@ object CoroutineRunner {
 
                 val operas = findComposerByLanguage(Language.ITALIAN)
                 ?.filter { composer -> composer.yearOfBirth in (1810..1860) }
-                ?.parallelMap { composer ->
+                ?.concurrentMap { composer ->
                     composer.operas()?.filter { opera -> opera.yearOfComposition in (1900..1910) }
                 }
                 ?.filterNotNull()
