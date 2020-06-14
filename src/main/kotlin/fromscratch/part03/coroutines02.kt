@@ -26,6 +26,7 @@ object Coroutines02Working {
         }
     }
 }
+
 object Coroutines0Not2Working {
     @JvmStatic
     fun main(args: Array<String>) {
