@@ -75,14 +75,6 @@ suspend fun parallelRetrieve(query: String) = withContext(Dispatchers.IO) {
     retrieveFromWikidata(query)
 }
 
-suspend fun <A, B> Iterable<A>.concurrentMap(f: suspend (A) -> B?): List<B?> = coroutineScope {
-    map { async { f(it) } }.awaitAll()
-}
-
-suspend fun <A, B> Iterable<A>.parallelMap(f: suspend (A) -> B?): List<B?> = withContext(Dispatchers.Default) {
-    map { async { f(it) } }.awaitAll()
-}
-
 object CoroutineRunner {
     @JvmStatic
     fun main(args: Array<String>) {
@@ -108,6 +100,5 @@ object CoroutineRunner {
         }
         logMsg("Done in $millis milliseconds")
     }
-
 }
 
