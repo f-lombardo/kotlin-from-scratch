@@ -32,19 +32,4 @@ object Coroutines04 {
             logMsg("Hello")
         }
     }
-
-    private suspend fun bigIntegerResult(): BigInteger {
-        Dispatchers.Default {
-
-        }
-        val deferred1: Deferred<BigInteger> =
-            CoroutineScope( Dispatchers.Unconfined + CoroutineName("Calandrino")).async {
-                bigPrime(1024)
-            }
-        val deferred2: Deferred<BigInteger> =
-            CoroutineScope(Dispatchers.Unconfined + CoroutineName("Buffalmacco")).async {
-                bigPrime(1024)
-            }
-        return deferred1.await() + deferred2.await()
-    }
 }
