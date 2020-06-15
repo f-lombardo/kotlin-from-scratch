@@ -1,5 +1,6 @@
 package fromscratch.part03
 
+import fromscratch.utils.bigPrime
 import fromscratch.utils.logMsg
 import fromscratch.utils.setOptionToShowCoroutineNames
 import kotlinx.coroutines.*
@@ -46,4 +47,3 @@ object Coroutines0Not2Working {
     }
 }
 
-private fun bigPrime(bitLength: Int) = BigInteger.probablePrime(bitLength, Random())

@@ -4,7 +4,7 @@ import fromscratch.utils.logMsg
 import fromscratch.utils.threadName
 import kotlinx.coroutines.*
 
-class RunningBar {
+class ConsoleProgressBar {
     private val res = StringBuilder()
 
     private fun progress(pct: Int, barLength: Int): String? {
@@ -37,14 +37,15 @@ class RunningBar {
             }
         }
     }
+
+    suspend fun showContinuously() = runningBar(::threadName)
 }
 
 fun CoroutineScope.startUIJob(): Job {
     logMsg("Starting UI")
-    val barJob = launch(Dispatchers.Unconfined) {
-        RunningBar().runningBar(::threadName)
+    return launch(Dispatchers.Unconfined) {
+        ConsoleProgressBar().showContinuously()
     }
-    return barJob
 }
 
 object ConsoleUI {
@@ -52,7 +53,7 @@ object ConsoleUI {
     @JvmStatic
     // This is just a simple application to show how the running bar looks like
     fun main(args: Array<String>) = runBlocking {
-        RunningBar().runningBar()
+        ConsoleProgressBar().runningBar()
     }
 }
 

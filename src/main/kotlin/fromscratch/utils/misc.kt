@@ -4,6 +4,8 @@ import java.text.CharacterIterator
 import java.text.StringCharacterIterator
 import java.lang.Long.signum
 import java.lang.management.ManagementFactory
+import java.math.BigInteger
+import java.util.*
 
 inline fun <T> tryOrNull(f: () -> T) =
     try {
@@ -46,3 +48,5 @@ fun usedMemory() = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().fre
 fun humanReadableUsedMemory() = humanReadableByteCountBin(usedMemory())
 
 fun getProcessID() = ManagementFactory.getRuntimeMXBean().name.split("@").first()
+
+fun bigPrime(bitLength: Int) = BigInteger.probablePrime(bitLength, Random())
