@@ -2,8 +2,6 @@ package fromscratch.part03
 
 import fromscratch.utils.bigPrime
 import kotlinx.coroutines.*
-import java.math.BigInteger
-import java.util.concurrent.Executors
 
 object Coroutines03 {
     @JvmStatic
