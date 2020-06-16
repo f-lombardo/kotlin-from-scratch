@@ -9,7 +9,7 @@ object Coroutines03 {
         val job: Job = launch(Dispatchers.Unconfined) {
             ConsoleProgressBar().showContinuously()
         }
-        println("Here is a big prime number: ${bigPrime(2048)}")
+        println("Here is a big prime number: ${bigPrime(4096)}")
         job.cancel()
     }
 }
