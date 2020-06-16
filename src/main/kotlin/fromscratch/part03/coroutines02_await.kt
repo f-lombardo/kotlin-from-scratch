@@ -6,6 +6,25 @@ import fromscratch.utils.setOptionToShowCoroutineNames
 import kotlinx.coroutines.*
 import java.math.BigInteger
 
+object Coroutines0Not2Working {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        setOptionToShowCoroutineNames()
+        runBlocking {
+            async(CoroutineName("Calandrino")) {
+                while (true) {
+                    logMsg("Bischerata numero ${bigPrime(1024)}")
+                }
+            }
+            async(CoroutineName("Buffalmacco")) {
+                while (true) {
+                    logMsg("Calandrino è bischero ${bigPrime(2048)} volte!")
+                }
+            }
+        }
+    }
+}
+
 object Coroutines02Working {
     @JvmStatic
     fun main(args: Array<String>) {
@@ -27,22 +46,4 @@ object Coroutines02Working {
     }
 }
 
-object Coroutines0Not2Working {
-    @JvmStatic
-    fun main(args: Array<String>) {
-        setOptionToShowCoroutineNames()
-        runBlocking {
-            async(CoroutineName("Calandrino")) {
-                while (true) {
-                    logMsg("Bischerata numero ${bigPrime(1024)}")
-                }
-            }
-            async(CoroutineName("Buffalmacco")) {
-                while (true) {
-                    logMsg("Calandrino è bischero ${bigPrime(2048)} volte!")
-                }
-            }
-        }
-    }
-}
 
