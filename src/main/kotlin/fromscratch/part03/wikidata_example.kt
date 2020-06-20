@@ -68,6 +68,7 @@ suspend fun Composer.operas(): List<Opera>? {
 
 suspend fun <T> String.findEntities(constructor: (Map<String, Any>) -> T): List<T>? = tryOrNull {
     retrieveFromWikidata(this).model.rows.map(constructor)
+//  See what happens when we use this:
 //  parallelRetrieve(this).model.rows.map(constructor)
 }
 
@@ -86,6 +87,7 @@ object CoroutineRunner {
 
                 val operas = findComposerByLanguage(Language.ITALIAN)
                 ?.filter { composer -> composer.yearOfBirth in (1810..1860) }
+                    // What happens changing map with concurrentMap or parallelMap?
                 ?.map { composer ->
                     composer.operas()?.filter { opera -> opera.yearOfComposition in (1900..1910) }
                 }
